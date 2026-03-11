@@ -93,9 +93,14 @@ require_once __DIR__ . '/../includes/header.php';
                 </p>
 
                 <p><strong>Description :</strong></p>
-                <div class="border rounded p-3 bg-light">
-                    <?= !empty($entreprise['description']) ? nl2br(htmlspecialchars($entreprise['description'])) : 'Aucune description.' ?>
-                </div>
+<div class="border rounded p-3 bg-light mb-3">
+    <?= !empty($entreprise['description']) ? nl2br(htmlspecialchars($entreprise['description'])) : 'Aucune description.' ?>
+</div>
+
+<p><strong>Horaires d'ouverture :</strong></p>
+<div class="border rounded p-3 bg-light mb-3">
+    <?= !empty($entreprise['horaires']) ? nl2br(htmlspecialchars($entreprise['horaires'])) : 'Horaires non renseignés.' ?>
+</div>
 
                 <hr>
 

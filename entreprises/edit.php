@@ -32,6 +32,7 @@ $email = $entreprise['email'] ?? '';
 $site_web = $entreprise['site_web'] ?? '';
 $description = $entreprise['description'] ?? '';
 $logoActuel = $entreprise['logo'] ?? '';
+$horaires = $entreprise['horaires'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
@@ -41,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $site_web = trim($_POST['site_web'] ?? '');
     $description = trim($_POST['description'] ?? '');
+    $horaires = trim($_POST['horaires'] ?? '');
 
     if ($nom === '') {
         $errors[] = "Le nom de l'entreprise est obligatoire.";
@@ -103,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     email = :email,
                     site_web = :site_web,
                     description = :description,
+                    horaires = :horaires,
                     logo = :logo
                 WHERE id = :id";
 
@@ -115,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':email' => $email,
             ':site_web' => $site_web,
             ':description' => $description,
+            ':horaires' => $horaires,
             ':logo' => $logoName,
             ':id' => $id
         ]);
@@ -182,7 +186,17 @@ require_once __DIR__ . '/../includes/header.php';
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="4"><?= htmlspecialchars($description) ?></textarea>
                     </div>
-
+                     
+                    <div class="mb-3">
+    <label for="horaires" class="form-label">Horaires d'ouverture</label>
+    <textarea
+        class="form-control"
+        id="horaires"
+        name="horaires"
+        rows="4"
+        placeholder="Ex: Lundi - Vendredi : 08:00 - 18:00&#10;Samedi : 09:00 - 13:00&#10;Dimanche : Fermé"
+    ><?= htmlspecialchars($horaires) ?></textarea>
+</div>
                     <?php if ($logoActuel !== ''): ?>
                         <div class="mb-3">
                             <p class="mb-2"><strong>Logo actuel :</strong></p>

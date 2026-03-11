@@ -111,7 +111,6 @@ $entreprises = $stmt->fetchAll();
                             src="/annuaire-entreprises/uploads/logos/<?= htmlspecialchars($entreprise['logo']) ?>"
                             alt="Logo de <?= htmlspecialchars($entreprise['nom']) ?>"
                             class="card-img-top"
-                            style="height: 200px; object-fit: contain; padding: 15px;"
                         >
                     <?php endif; ?>
 
@@ -138,9 +137,14 @@ $entreprises = $stmt->fetchAll();
                             <?= htmlspecialchars($entreprise['email'] ?? '') ?>
                         </p>
 
-                        <p class="card-text mb-3">
+                        <p class="card-text mb-1">
                             <strong>Site web :</strong>
                             <?= htmlspecialchars($entreprise['site_web'] ?? '') ?>
+                        </p>
+
+                        <p class="card-text mb-3">
+                            <strong>Horaires :</strong><br>
+                            <?= !empty($entreprise['horaires']) ? nl2br(htmlspecialchars($entreprise['horaires'])) : 'Non renseignés' ?>
                         </p>
 
                         <a href="/annuaire-entreprises/entreprises/show.php?id=<?= (int)$entreprise['id'] ?>" class="btn btn-primary">

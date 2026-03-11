@@ -15,6 +15,7 @@ $telephone = '';
 $email = '';
 $site_web = '';
 $description = '';
+$horaires = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
@@ -24,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $site_web = trim($_POST['site_web'] ?? '');
     $description = trim($_POST['description'] ?? '');
+    $horaires = trim($_POST['horaires'] ?? '');
 
     if ($nom === '') {
         $errors[] = "Le nom de l'entreprise est obligatoire.";
@@ -71,8 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $sql = "INSERT INTO entreprises (nom, categorie, adresse, telephone, email, site_web, description, logo)
-                VALUES (:nom, :categorie, :adresse, :telephone, :email, :site_web, :description, :logo)";
+        $sql = "INSERT INTO entreprises (nom, categorie, adresse, telephone, email, site_web, description, horaires, logo)
+        VALUES (:nom, :categorie, :adresse, :telephone, :email, :site_web, :description, :horaires, :logo)";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -83,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':email' => $email,
             ':site_web' => $site_web,
             ':description' => $description,
+            ':horaires' => $horaires,
             ':logo' => $logoName
         ]);
 
@@ -144,6 +147,17 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="4"><?= htmlspecialchars($description) ?></textarea>
+                    </div>
+
+                    <div class="mb-3">
+    <label for="horaires" class="form-label">Horaires d'ouverture</label>
+    <textarea
+        class="form-control"
+        id="horaires"
+        name="horaires"
+        rows="4"
+        placeholder="Ex: Lundi - Vendredi : 08:00 - 18:00&#10;Samedi : 09:00 - 13:00&#10;Dimanche : Fermé"
+    >                    <?= htmlspecialchars($horaires) ?></textarea>
                     </div>
 
                     <div class="mb-3">
