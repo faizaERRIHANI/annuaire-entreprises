@@ -1,0 +1,46 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card-entreprise {
+    transition: 0.3s;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-entreprise:hover {
+    transform: translateY(-3px);
+}
+
+.card-entreprise img {
+    height: 120px;
+    width: 100%;
+    object-fit: contain;
+    padding: 10px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.card-entreprise .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-entreprise .card-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.card-entreprise .card-text {
+    margin-bottom: 8px;
+}
+
+.card-entreprise .btn {
+    margin-top: auto;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
