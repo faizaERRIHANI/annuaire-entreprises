@@ -27,8 +27,39 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([':id' => $id]);
 $avisList = $stmt->fetchAll();
 
-$pageTitle = $entreprise['nom'] . " - Fiche entreprise";
+$nom = $entreprise['nom'] ?? '';
+$categorie = $entreprise['categorie'] ?? '';
+$adresse = $entreprise['adresse'] ?? '';
+$telephone = $entreprise['telephone'] ?? '';
+$email = $entreprise['email'] ?? '';
+$siteWeb = $entreprise['site_web'] ?? '';
+$description = $entreprise['description'] ?? '';
+$horaires = $entreprise['horaires'] ?? '';
+$logo = $entreprise['logo'] ?? '';
+$noteMoyenne = $entreprise['note_moyenne'] ?? '0';
+$nombreAvis = $entreprise['nombre_avis'] ?? '0';
+$latitude = $entreprise['latitude'] ?? null;
+$longitude = $entreprise['longitude'] ?? null;
+
+$pageTitle = $nom . " - Fiche entreprise";
 require_once __DIR__ . '/../includes/header.php';
+
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$currentHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$currentUri = $_SERVER['REQUEST_URI'] ?? '';
+$currentUrl = $scheme . '://' . $currentHost . $currentUri;
+
+$mapsQuery = '';
+$mapsEmbedUrl = '';
+$mapsDirectUrl = '';
+
+if (!empty($latitude) && !empty($longitude)) {
+    $mapsQuery = (string)$latitude . ',' . (string)$longitude;
+    $mapsEmbedUrl = 'https://www.google.com/maps?q=' . urlencode($mapsQuery) . '&z=15&output=embed';
+    $mapsDirectUrl = 'https://www.google.com/maps?q=' . urlencode($mapsQuery);
+}
+
+$qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($currentUrl);
 ?>
 
 <div class="row justify-content-center">
@@ -46,7 +77,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0"><?= htmlspecialchars($entreprise['nom']) ?></h1>
+            <h1 class="mb-0"><?= htmlspecialchars($nom) ?></h1>
 
             <div class="d-flex gap-2">
                 <a href="/annuaire-entreprises/entreprises/edit.php?id=<?= (int)$entreprise['id'] ?>" class="btn btn-warning">
@@ -66,26 +97,27 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <?php if (!empty($entreprise['logo'])): ?>
+                <?php if ($logo !== ''): ?>
                     <div class="mb-3">
                         <img
-                            src="/annuaire-entreprises/uploads/logos/<?= htmlspecialchars($entreprise['logo']) ?>"
-                            alt="Logo de <?= htmlspecialchars($entreprise['nom']) ?>"
+                            src="/annuaire-entreprises/uploads/logos/<?= htmlspecialchars($logo) ?>"
+                            alt="Logo de <?= htmlspecialchars($nom) ?>"
+                            class="img-fluid"
                             style="max-width: 180px; height: auto;"
                         >
                     </div>
                 <?php endif; ?>
 
-                <p><strong>Catégorie :</strong> <?= htmlspecialchars($entreprise['categorie'] ?? '') ?></p>
-                <p><strong>Adresse :</strong> <?= nl2br(htmlspecialchars($entreprise['adresse'] ?? '')) ?></p>
-                <p><strong>Téléphone :</strong> <?= htmlspecialchars($entreprise['telephone'] ?? '') ?></p>
-                <p><strong>Email :</strong> <?= htmlspecialchars($entreprise['email'] ?? '') ?></p>
+                <p><strong>Catégorie :</strong> <?= htmlspecialchars($categorie) ?></p>
+                <p><strong>Adresse :</strong> <?= nl2br(htmlspecialchars($adresse)) ?></p>
+                <p><strong>Téléphone :</strong> <?= htmlspecialchars($telephone) ?></p>
+                <p><strong>Email :</strong> <?= htmlspecialchars($email) ?></p>
 
                 <p>
                     <strong>Site web :</strong>
-                    <?php if (!empty($entreprise['site_web'])): ?>
-                        <a href="<?= htmlspecialchars($entreprise['site_web']) ?>" target="_blank" rel="noopener noreferrer">
-                            <?= htmlspecialchars($entreprise['site_web']) ?>
+                    <?php if ($siteWeb !== ''): ?>
+                        <a href="<?= htmlspecialchars($siteWeb) ?>" target="_blank" rel="noopener noreferrer">
+                            <?= htmlspecialchars($siteWeb) ?>
                         </a>
                     <?php else: ?>
                         Non renseigné
@@ -93,34 +125,76 @@ require_once __DIR__ . '/../includes/header.php';
                 </p>
 
                 <p><strong>Description :</strong></p>
-<div class="border rounded p-3 bg-light mb-3">
-    <?= !empty($entreprise['description']) ? nl2br(htmlspecialchars($entreprise['description'])) : 'Aucune description.' ?>
-</div>
+                <div class="border rounded p-3 bg-light mb-3">
+                    <?= $description !== '' ? nl2br(htmlspecialchars($description)) : 'Aucune description.' ?>
+                </div>
 
-<p><strong>Horaires d'ouverture :</strong></p>
-<div class="border rounded p-3 bg-light mb-3">
-    <?= !empty($entreprise['horaires']) ? nl2br(htmlspecialchars($entreprise['horaires'])) : 'Horaires non renseignés.' ?>
-</div>
+                <p><strong>Horaires d'ouverture :</strong></p>
+                <div class="border rounded p-3 bg-light mb-3">
+                    <?= $horaires !== '' ? nl2br(htmlspecialchars($horaires)) : 'Horaires non renseignés.' ?>
+                </div>
+
+                <?php if ($mapsQuery !== ''): ?>
+                    <p>
+                        <strong>Coordonnées :</strong>
+                        <?= htmlspecialchars((string)$latitude) ?>,
+                        <?= htmlspecialchars((string)$longitude) ?>
+                    </p>
+
+                    <p><strong>Localisation sur Google Maps :</strong></p>
+                    <div class="ratio ratio-16x9 mb-3">
+                        <iframe
+                            src="<?= htmlspecialchars($mapsEmbedUrl) ?>"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <p>
+                        <a href="<?= htmlspecialchars($mapsDirectUrl) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                            Ouvrir dans Google Maps
+                        </a>
+                    </p>
+                <?php endif; ?>
 
                 <hr>
 
                 <p>
                     <strong>Note moyenne :</strong>
-                    <?= htmlspecialchars((string)($entreprise['note_moyenne'] ?? '0')) ?>/5
+                    <?= htmlspecialchars((string)$noteMoyenne) ?>/5
                 </p>
 
                 <p>
                     <strong>Nombre d’avis :</strong>
-                    <?= htmlspecialchars((string)($entreprise['nombre_avis'] ?? '0')) ?>
+                    <?= htmlspecialchars((string)$nombreAvis) ?>
+                </p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h4 mb-3">QR Code de partage</h2>
+
+                <p class="mb-3">
+                    Scannez ce QR Code pour ouvrir la fiche de cette entreprise.
                 </p>
 
-                <?php if (!empty($entreprise['latitude']) && !empty($entreprise['longitude'])): ?>
-                    <p>
-                        <strong>Coordonnées :</strong>
-                        <?= htmlspecialchars((string)$entreprise['latitude']) ?>,
-                        <?= htmlspecialchars((string)$entreprise['longitude']) ?>
-                    </p>
-                <?php endif; ?>
+                <div class="text-center">
+                    <img
+                        src="<?= htmlspecialchars($qrCodeUrl) ?>"
+                        alt="QR Code de partage"
+                        style="max-width: 200px; height: auto;"
+                    >
+                </div>
+
+                <p class="mt-3 mb-0 text-break">
+                    <strong>Lien :</strong>
+                    <a href="<?= htmlspecialchars($currentUrl) ?>" target="_blank" rel="noopener noreferrer">
+                        <?= htmlspecialchars($currentUrl) ?>
+                    </a>
+                </p>
             </div>
         </div>
 
